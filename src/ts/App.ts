@@ -2,8 +2,6 @@
 
 import { app, BrowserWindow } from 'electron';
 import Main from './Main';
-import * as http from 'http';
-import RegisterServer from './server/RegisterServer';
 
 /*
 const connection = mysql.createConnection({
@@ -20,7 +18,7 @@ connection.connect((err) => {
 */
 
 //Start Server
-RegisterServer.start();
+require("./server/RegisterServer").start();
 
 //Start GUI App
 Main.main(app, BrowserWindow);
