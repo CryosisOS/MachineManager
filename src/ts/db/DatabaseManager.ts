@@ -1,89 +1,56 @@
-import { DatabaseConnection } from "./DatabaseTypes"
+import { Agent } from "./DatabaseTypes"
+const lowdb = require('lowdb');
+const FileSync = require('lowdb/adapters/FileSync');
 
-const sqlite3 = require('sqlite3').verbose();
+const DATABASE_VERSION : number = 1.0;
+const DATABASE_FILE : string = "./res/database/machines.json";
+const DATABASE_ADAPTER : any = new FileSync(DATABASE_FILE);
+const DATABASE_CONNECTOR : any = lowdb(DATABASE_ADAPTER);
+DATABASE_CONNECTOR.defaults({version:DATABASE_VERSION, agents: []}).write();
 
-export default class DatabaseManager {
-    static openConnection(): DatabaseConnection {
-        let db = null;
-        let dbCon: DatabaseConnection = {
-            "connected": false,
-            "database": db
-        };
-        db = new sqlite3.Database("../../../res/database/machines.db", sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
-            if (err) {
-                console.error(err.message);
-                return dbCon;
-            }
-            console.log('Opened connection to the Database.');
+class DatabaseManager {
+    static update(): void{}
+}
+
+export default class AgentsTable {
+
+    /******************
+     * INSERTS
+     *****************/
+    static insertAgent(newAgent: Agent) : void{
+        DATABASE_CONNECTOR.get("agents")
+            .push({uuid: newAgent.uuid, hostname: newAgent.hostname, ip_addr: newAgent.ip_addr})
+            .write();
+    }
+
+    /******************
+     * QUERIES
+     *****************/
+    static queryVersion() : number {
+        let query : any = DATABASE_CONNECTOR.get("version");
+        return query.value();
+    }
+
+    static queryUUIDs() : string []{
+        let uuids : string [] = [];
+        let agents : any[] = DATABASE_CONNECTOR.get("agents");
+        agents.forEach(agent => {
+            uuids.push(agent.value().uuid);
         });
-        dbCon.connected = true;
-        dbCon.database = db;
-        return dbCon;
+        return uuids;
     }
 
-    static closeConnection(dbCon: DatabaseConnection): DatabaseConnection {
-        dbCon.database.close((err) => {
-            if (err) {
-                console.error(err.message);
-                return dbCon;
-            }
+    static queryAgents() : Agent[] {
+        let agents: Agent[] = [];
+        let query : any[] = DATABASE_CONNECTOR.get("agents");
+        query.forEach(result => {
+            let newAgent : Agent = {
+                uuid: result.value().uuid,
+                hostname: result.value().hostname,
+                ip_addr: result.value().ip_addr
+            };
+            agents.push(newAgent);
         });
-        console.log("Closed connection to the Database.")
-        dbCon.database = null;
-        dbCon.connected = false;
-        return dbCon;
-    }
-
-    static checkDatabaseSchema(): void {
-        let db: DatabaseConnection = this.openConnection();
-        if (db.connected) {
-            let agentTableCreateStatement = `CREATE TABVLE IF NOT EXISTS agents (
-                uuid TEXT PRIMARY KEY, hostname TEXT, ip_addr TEXT
-            )`;
-            this.run(db, agentTableCreateStatement);//LOG that this has been done
-        }
-        this.closeConnection(db);
-    }
-
-    static querySpecific(db: DatabaseConnection, sql, params = []) {
-        return new Promise((resolve, reject) => {
-            db.database.get(sql, params, (err, result) => {
-                if (err) {
-                    console.log('Error running sql: ' + sql)
-                    console.log(err)
-                    reject(err)
-                } else {
-                    resolve(result)
-                }
-            })
-        })
-    }
-
-    static queryAll(db: DatabaseConnection, sql, params = []) {
-        return new Promise((resolve, reject) => {
-            db.database.all(sql, params, (err, rows) => {
-                if (err) {
-                    console.log('Error running sql: ' + sql)
-                    console.log(err)
-                    reject(err)
-                } else {
-                    resolve(rows)
-                }
-            })
-        })
-    }
-
-    static run(db: DatabaseConnection, sql, params = []) {
-        return new Promise((resolve, reject) => {
-            db.database.run(sql, params, function (err) {
-                if (err) {
-                    console.log('Error running sql ' + sql)
-                    console.log(err)
-                    reject(err)
-                } else {
-                    resolve({ id: this.lastID })
-                }
-            })
-        })
+        return agents;
     }
 }

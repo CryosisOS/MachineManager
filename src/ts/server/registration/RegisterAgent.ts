@@ -1,34 +1,29 @@
-import { DatabaseConnection } from "./../../db/DatabaseTypes";
-import AgentsTable from "./../../db/AgentsTable";
-import DatabaseManager from "../../db/DatabaseManager";
+import AgentsTable from "../../db/DatabaseManager";
+import { Agent } from "../../db/DatabaseTypes";
 
-export default class Registration {
-    static register(hostname: string, ip_addr: string): string {
-        let uuid = this.getUUID();
-        let db : DatabaseConnection = DatabaseManager.openConnection();
-        if(db.connected){
-            let query = `INSERT INTO agents (uuid, hostname, ip_addr) VALUES (?, ?, ?)`;
-            DatabaseManager.run(db, query, [uuid, hostname, ip_addr]);
-        }
-        else{
-            console.error("Could not connect to Datbase.");
-        }
-        DatabaseManager.closeConnection(db);
-        return uuid;
-    }
+export function register(hostname: string, ip_addr: string): string {
+    let uuid : string = getUUID();
+    AgentsTable.insertAgent({
+        uuid: uuid,
+        hostname: hostname,
+        ip_addr: ip_addr
+    });
+    return uuid;
+}
 
-    private static getUUID(): string {
-        let uuids: string[] = AgentsTable.queryUUIDs();
-        let newUuid = "";
-        do {
-            newUuid = this.generateUUID();
-        } while (uuids.indexOf(newUuid) !== -1);
-        return newUuid;
-    }
+function getUUID(): string {
+    let uuids: string[] = AgentsTable.queryUUIDs();
+    let newUuid = "";
+    
+    do {
+        newUuid = generateUUID();
+    } while (uuids.indexOf(newUuid) !== -1);
 
-    private static generateUUID(): string {
-        return Guid.create().toString();
-    }
+    return newUuid;
+}
+
+function generateUUID(): string {
+    return Guid.create().toString();
 }
 
 class Guid {

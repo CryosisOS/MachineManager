@@ -5,36 +5,34 @@ import * as server_data from '../../../res/server_config.json';
 type ServerConfig = {
     protocol: string;
     address: string;
-    port: number;
-    secret:string;
+    registration_port: number;
+    main_port: number;
+    secret: string;
 }
 
 export default class RegisterServerObject {
     // ref to Express instance
     public express: express.Application;
-
-    public address: string;
-    public port: number;
-    public secret: string;
+    public serverConfig: ServerConfig;
     //Run configuration methods on the Express instance.
     constructor() {
-        let serverConfig: ServerConfig = this.loadServerConfig();
-        this.address = serverConfig.address;
-        this.port = serverConfig.port;
+        this.serverConfig = this.loadServerConfig();
         this.express = express();
     }
 
     loadServerConfig(): ServerConfig {
         var json = {
-            "protocol":"",
-            "address":"",
-            "port":-1,
-            "secret":""
+            "protocol": "",
+            "address": "",
+            "registration_port": -1,
+            "main_port":-1,
+            "secret": ""
         };
         json.protocol = (<any>server_data).protocol;
-        json.address = (<any>server_data).address
-        json.port = (<any>server_data).port;
-        json.secret = (<any>server_data).secret
+        json.address = (<any>server_data).address;
+        json.registration_port = (<any>server_data).registration_port;
+        json.main_port = (<any>server_data).main_port;
+        json.secret = (<any>server_data).secret;
         return json;
     }
 }

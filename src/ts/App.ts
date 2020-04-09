@@ -21,4 +21,4 @@ connection.connect((err) => {
 require("./server/RegisterServer").start();
 
 //Start GUI App
-Main.main(app, BrowserWindow);
+//Main.main(app, BrowserWindow);

@@ -1,45 +1,69 @@
 import RegisterServerObject from "../server/RegisterServerObject";
 
-const serverObject = new RegisterServerObject();
-serverObject.express.set('port', serverObject.port);
+class RegisterServer {
+    public registration_server: RegisterServerObject = null;
+    public http;
+    public io;
 
-let http = require("http").Server(serverObject.express);
-let io = require("socket.io")(http);
-
-//authenticate method
-function authenticate(key: string): boolean {
-    if (serverObject.secret === key) {
-        return true;
+    constructor() {
+        this.registration_server = new RegisterServerObject();
+        this.registration_server.express.set('port', this.registration_server.serverConfig.registration_port);
+        this.http = require("http").Server(this.registration_server.express);
+        this.io = require("socket.io")(this.http);
     }
-    else {
-        return false;
-    }
-}
 
-// whenever a user connects on port 3000 via
-// a websocket, log that a user has connected
-io.on("connection", function (socket: any) {
-    let timeout: NodeJS.Timeout = setTimeout(socket, 10000);
 
-    socket.on("authenticate", function (key: string) {
-        let authenticated: boolean = authenticate(key);
-        if (!authenticated) { socket.disconnect(true); }//Close connection
-        else { //authenticated
-            clearTimeout(timeout);
-            socket.emit("authenticated", true);
+    //authenticate method
+    public authenticate(key: string): boolean {
+        if (this.registration_server.serverConfig.secret === key) {
+            return true;
         }
+        else {
+            return false;
+        }
+    }
 
-        socket.on("register", function (agentHostName: string, agentIP_addr: string, agentRegistration: any) {
-            let uuid = require("./registration/RegisterAgent").Registration.register(agentHostName, agentIP_addr);
-            agentRegistration(uuid);
-        });
+
+
+}
+export function start(): void {
+    let svrObj = new RegisterServer();
+    let server = svrObj.http.listen(svrObj.registration_server.serverConfig.registration_port, function () {
+        console.log(`listening on *:${svrObj.registration_server.serverConfig.registration_port}`);
     });
-});
+    // whenever a user connects on port 3000 via
+    // a websocket, log that a user has connected
+    svrObj.io.on("connection", function (socket: any) {
+        let authenticated: boolean = false;
+        let timeout: NodeJS.Timeout = setTimeout(function(){
+            if(!authenticated/* Not Authenticated */){
+                socket.disconnect(true);
+                console.log("Agent has been disconnected. They did not authenticate in the alloted amount of time.");
+            }
+        }, 10000);
 
+        console.log("Agent has connected to the server.");
+        socket.on("authenticate", function (key: string) {
+            //console.log(`Key received from Agent: ${key}`);
+            //console.log(`Key stored in the server: ${svrObj.registration_server.serverConfig.secret}`);
+            authenticated = svrObj.authenticate(key);
+            if (!authenticated) {
+                console.log("Agent has been disconnected. They could not be authenticated.")
+                socket.disconnect(true);
+            }//Close connection
+            else { //authenticated
+                console.log("Agent has been authenticated");
+                clearTimeout(timeout);
+                socket.emit("authenticated");
+            }
 
-let server;
-export function start() : void {
-    server = http.listen(serverObject.port, function () {
-        console.log(`listening on *:${serverObject.port}`);
+            socket.on("register", function (agentHostName: string, agentRegistration: any) {
+                let agentIP_addr = socket.handshake.address;
+                agentIP_addr = agentIP_addr.split(":").pop();
+                let uuid = require("./registration/RegisterAgent").register(agentHostName, agentIP_addr);
+                console.log("Agents has been registered with the database.");
+                agentRegistration(uuid, svrObj.registration_server.serverConfig.main_port);
+            });
+        });
     });
 }
