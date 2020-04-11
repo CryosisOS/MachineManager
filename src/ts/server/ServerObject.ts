@@ -10,7 +10,7 @@ type ServerConfig = {
     secret: string;
 }
 
-export default class RegisterServerObject {
+export default class ServerObject {
     // ref to Express instance
     public express: express.Application;
     public serverConfig: ServerConfig;

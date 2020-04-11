@@ -1,35 +1,32 @@
-import RegisterServerObject from "../server/RegisterServerObject";
+import ServerObject from "../ServerObject";
 
-class RegisterServer {
-    public registration_server: RegisterServerObject = null;
+class CoreServer {
+    public core_server: ServerObject = null;
     public http;
     public io;
 
     constructor() {
-        this.registration_server = new RegisterServerObject();
-        this.registration_server.express.set('port', this.registration_server.serverConfig.registration_port);
-        this.http = require("http").Server(this.registration_server.express);
+        this.core_server = new ServerObject();
+        this.core_server.express.set('port', this.core_server.serverConfig.main_port);
+        this.http = require("http").Server(this.core_server.express);
         this.io = require("socket.io")(this.http);
     }
 
 
     //authenticate method
     public authenticate(key: string): boolean {
-        if (this.registration_server.serverConfig.secret === key) {
+        if (this.core_server.serverConfig.secret === key) {
             return true;
         }
         else {
             return false;
         }
     }
-
-
-
 }
 export function start(): void {
-    let svrObj = new RegisterServer();
-    let server = svrObj.http.listen(svrObj.registration_server.serverConfig.registration_port, function () {
-        console.log(`listening on *:${svrObj.registration_server.serverConfig.registration_port}`);
+    let svrObj = new CoreServer();
+    let server = svrObj.http.listen(svrObj.core_server.serverConfig.main_port, function () {
+        console.log(`listening on *:${svrObj.core_server.serverConfig.main_port}`);
     });
     // whenever a user connects on port 3000 via
     // a websocket, log that a user has connected
@@ -45,7 +42,7 @@ export function start(): void {
         console.log("Agent has connected to the server.");
         socket.on("authenticate", function (key: string) {
             //console.log(`Key received from Agent: ${key}`);
-            //console.log(`Key stored in the server: ${svrObj.registration_server.serverConfig.secret}`);
+            //console.log(`Key stored in the server: ${svrObj.core_server.serverConfig.secret}`);
             authenticated = svrObj.authenticate(key);
             if (!authenticated) {
                 console.log("Agent has been disconnected. They could not be authenticated.")
@@ -56,14 +53,6 @@ export function start(): void {
                 clearTimeout(timeout);
                 socket.emit("authenticated");
             }
-
-            socket.on("register", function (agentHostName: string, agentRegistration: any) {
-                let agentIP_addr = socket.handshake.address;
-                agentIP_addr = agentIP_addr.split(":").pop();
-                let uuid = require("./registration/RegisterAgent").register(agentHostName, agentIP_addr);
-                console.log("Agents has been registered with the database.");
-                agentRegistration(uuid, svrObj.registration_server.serverConfig.main_port);
-            });
         });
     });
 }
