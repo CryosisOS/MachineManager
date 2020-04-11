@@ -7,7 +7,7 @@
     "start": "electron ./dist/src/ts/App.js",
     "clean": "del ./dist/*",
     "transpile": "tsc",
-    "html": "copyfiles src/html/**/*.html src/html/**/*.css dist/",
+    "html": "copyfiles src/html/**/*.* dist/",
     "build": "gulp && npm run transpile && npm run html"
   },
   "author": "Cryosis",
