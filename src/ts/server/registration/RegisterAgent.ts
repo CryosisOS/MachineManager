@@ -1,5 +1,4 @@
 import AgentsTable from "../../db/DatabaseManager";
-import { Agent } from "../../db/DatabaseTypes";
 
 export function register(hostname: string, ip_addr: string): string {
     let uuid : string = getUUID();

@@ -8,7 +8,10 @@
     "clean": "del ./dist/*",
     "transpile": "tsc",
     "html": "copyfiles src/html/**/*.* dist/",
-    "build": "gulp && npm run transpile && npm run html"
+    "json": "copyfiles res/**/*.json dist/",
+    "build_json":"npm run json",
+    "build_src": "gulp && npm run transpile && npm run html",
+    "build_full": "npm run build_src && npm run build_json"
   },
   "author": "Cryosis",
   "license": "ISC",

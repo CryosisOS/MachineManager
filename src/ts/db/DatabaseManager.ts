@@ -1,9 +1,8 @@
 import { Agent } from "./DatabaseTypes"
 const lowdb = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-
 const DATABASE_VERSION : number = 1.0;
-const DATABASE_FILE : string = "./res/database/machines.json";
+const DATABASE_FILE : string = "./dist/res/database/machines.json";
 const DATABASE_ADAPTER : any = new FileSync(DATABASE_FILE);
 const DATABASE_CONNECTOR : any = lowdb(DATABASE_ADAPTER);
 DATABASE_CONNECTOR.defaults({version:DATABASE_VERSION, agents: []}).write();

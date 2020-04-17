@@ -24,7 +24,7 @@ export default class Main {
         Main.mainWindow
             .loadURL(///*'file://' + */__dirname + '../html/index.html');
             formatUrl({
-                pathname: path.join(__dirname, "../html/index.html"),
+                pathname: path.join(__dirname, "../html/pages/index.html"),
                 protocol: "file",
                 slashes: true
             }));
