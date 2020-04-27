@@ -2,28 +2,49 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <title>Hello World!</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="../libs/bootstrap/css/bootstrap.min.css" />
-    <link href="../css/styles.css" rel="stylesheet" type="text/css" />
-
-    <!-- Bootstrap Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="../libs/jquery/jquery.min.js"></script>
-    <script src="../libs/popper/umd//popper.min.js"></script>
-    <script src="../libs/bootstrap/js/bootstrap.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>AgentManager</title>
+    <link rel="stylesheet" href="../libs/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 
 <body>
-    <div id="main-body">
-        <div id="middle-message">MIDDLE</div>
-        <button id="hide-button" onclick="hideText()">Hide!</button>
-        <button id="show-button" onclick="showText()">Show!</button>
+    <div class="container" id="top_container"><img></div>
+    <div class="container" id="main_container" style="height: 400px;overflow-y: scroll;">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Column 1</th>
+                        <th>Column 2</th>
+                        <th>Column 3</th>
+                        <th>Column 4</th>
+                        <th>Column 5</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cell 1</td>
+                        <td>Cell 2</td>
+                        <td>Cell 3</td>
+                        <td>Cell 4</td>
+                        <td>Cell 5</td>
+                    </tr>
+                    <tr>
+                        <td>Cell 1</td>
+                        <td>Cell 2</td>
+                        <td>Cell 3</td>
+                        <td>Cell 4</td>
+                        <td>Cell 5</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-
-    <!-- Renderer Script -->
-    <script type="text/javascript" src="../renderers/index_renderer.js"></script>
+    <div class="container" id="bottom_container" style="margin-top: 5px;height: 95px;width: 800px;"><img></div>
+    <script src="../libs/jquery/jquery.min.js"></script>
+    <script src="../libs/bootstrap/js/bootstrap.min.js"></script>
 </body>
 
 </html>

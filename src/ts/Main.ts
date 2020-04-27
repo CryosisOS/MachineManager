@@ -20,7 +20,7 @@ export default class Main {
     private static onReady() {
         //console.log(__dirname);
         //console.log('file://' + __dirname + '/../html/index.html');
-        Main.mainWindow = new Main.BrowserWindow({ width: 800, height: 600 });
+        Main.mainWindow = new Main.BrowserWindow({ width: 1000, height: 680 });
         Main.mainWindow
             .loadURL(///*'file://' + */__dirname + '../html/index.html');
             formatUrl({
@@ -34,9 +34,9 @@ export default class Main {
     static main(app: Electron.App, browserWindow: typeof BrowserWindow) {
         //Start the main server on port 3001
         require("./server/core/CoreServer").start();
-        // we pass the Electron.App object and the  
-        // Electron.BrowserWindow into this function 
-        // so this class has no dependencies. This 
+        // we pass the Electron.App object and the
+        // Electron.BrowserWindow into this function
+        // so this class has no dependencies. This
         // makes the code easier to write tests for
         Main.BrowserWindow = browserWindow;
         Main.application = app;
