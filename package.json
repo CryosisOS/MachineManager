@@ -18,7 +18,7 @@
   "dependencies": {
     "@types/node": "^12.12.21",
     "@types/socket.io": "^2.1.4",
-    "electron": "^8.2.0",
+    "electron": "^8.2.4",
     "express": "^4.17.1",
     "lowdb": "^1.0.0",
     "mysql": "^2.18.1",
